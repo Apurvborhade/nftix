@@ -21,18 +21,25 @@ contract EventTicket is ERC721, Ownable {
 
     event TicketMinted(address, uint);
     // Mint Ticket
-    function mintTicket(address to, uint256 tokenId) public payable onlyOwner {
+    function mintTicket(address to) external payable onlyOwner {
         // Check for Supply
         require(currentSupply < maxSupply, "Maximum Supply Reached");
 
         // Check The Amount of ether sent
         require(msg.value == mintPrice, "Price of this ticket is 0.01 ETH");
-        
+
+        uint tokenId = currentSupply + 1;
+
         _safeMint(to, tokenId);
-        
+
         // Emit Event
         emit TicketMinted(to, tokenId);
         currentSupply++;
+    }
+
+    // Withdraw funds
+    function withDrawFunds() external onlyOwner {
+        payable(owner()).transfer(address(this).balance);
     }
 
     // Read Organizer
