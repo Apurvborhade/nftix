@@ -7,15 +7,17 @@ contract TicketFactory {
     address[] public allEvents;
     mapping(address => address[]) organizerToEvents;
 
+    event EventCreated(address indexed eventAddress);
     function createEvent(
         string memory _eventName,
         string memory _symbol
-    ) external {
+    ) external  {
         EventTicket newEvent = new EventTicket(_eventName, _symbol, msg.sender);
 
         allEvents.push(address(newEvent));
 
         organizerToEvents[msg.sender].push(address(newEvent));
+        emit EventCreated(address(newEvent));
     }
 
     function getOrganizerEvents(

@@ -19,7 +19,8 @@ contract EventTicket is ERC721, Ownable {
         organizer = msg.sender;
     }
 
-    event TicketMinted(address, uint);
+    event TicketMinted(address indexed recipient, uint tokenId);
+
     // Mint Ticket
     function mintTicket(address to) external payable onlyOwner {
         // Check for Supply
