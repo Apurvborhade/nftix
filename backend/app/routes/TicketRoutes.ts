@@ -1,16 +1,14 @@
 import express from 'express'
-import { createEvent, getAllEvents, getEventsByUser } from '../controller/ticketController';
+import { createEvent, getAllEvents, getEventByAddress, getEventsByUser, getTickets, mintTicket } from '../controller/ticketController';
 
 const router = express.Router()
 
 // POST /events
-router.post("/events/create", createEvent);
+router.post("/ticket/mint", mintTicket);
 
-// GET /events
-router.get("/events", getAllEvents);
+// GET USER TICKETS
+router.get("/tickets", getTickets)
 
-// GET /tickets/:userAddress
-router.get("/events/:userAddress", getEventsByUser);
 
 
 export default router;

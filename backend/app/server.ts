@@ -1,6 +1,6 @@
 import express from 'express'
 import dotenv from 'dotenv'
-import APIRoutes from './routes/TicketRoutes'
+import APIRoutes from './routes/EventRoutes'
 import { connectDB } from './lib/db';
 import { errorHandler } from './middleware/errorHandler';
 

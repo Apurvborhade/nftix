@@ -27,7 +27,7 @@ contract EventTicket is ERC721, Ownable {
         require(currentSupply < maxSupply, "Maximum Supply Reached");
 
         // Check The Amount of ether sent
-        require(msg.value == mintPrice, "Price of this ticket is 0.01 ETH");
+        require(msg.value == mintPrice, "Price of this ticket is 0.01 ETH");    
 
         uint tokenId = currentSupply + 1;
 
@@ -42,6 +42,7 @@ contract EventTicket is ERC721, Ownable {
     function withDrawFunds() external onlyOwner {
         payable(owner()).transfer(address(this).balance);
     }
+
 
     // Read Organizer
     function viewOrganizer() public view returns (address) {
