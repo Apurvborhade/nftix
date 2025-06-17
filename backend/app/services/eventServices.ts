@@ -5,9 +5,9 @@ import { EventModel } from "../model/EventModel";
 import { CustomError } from "../middleware/errorHandler";
 
 export const getEvents = async (req: Request, res: Response) => {
-    const eventsAddress: string[] = await wallet.readContract({
-        address: EVENTFACTORY_ADDRESS,
-        abi: EVENTFACTORY_ABI,
+    const eventsAddress = await wallet.readContract({
+        address: EVENTFACTORY_ADDRESS as `0x${string}`,
+        abi: EVENTFACTORY_ABI.abi,
         functionName: 'getAllEvents'
     })
 
