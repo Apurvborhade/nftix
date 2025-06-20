@@ -24,7 +24,8 @@ export default function CreateEventPage() {
     location: "",
     totalTickets: "",
     ticketPrice: "",
-    organizer: ""
+    organizer: "",
+    eventtime: ""
   })
 
   const { mutate: createEvent, isPending, isSuccess, error } = useCreateEvent()
@@ -52,7 +53,8 @@ export default function CreateEventPage() {
         location: "",
         totalTickets: "",
         ticketPrice: "",
-        organizer: ""
+        organizer: "",
+        eventtime:""
       })
     }
   }, [isSuccess, isPending])
@@ -191,19 +193,19 @@ export default function CreateEventPage() {
                     />
                   </div>
 
-                  {/* <div>
+                  <div>
                     <Label htmlFor="time" className="text-slate-700 font-semibold">
                       Event Time *
                     </Label>
                     <Input
                       id="time"
                       type="time"
-                      value={formData.eventdate}
-                      onChange={(e) => handleInputChange("time", e.target.value)}
+                      value={formData.eventtime}
+                      onChange={(e) => handleInputChange("eventtime", e.target.value)}
                       className="mt-2"
                       required
                     />
-                  </div> */}
+                  </div>
                 </div>
 
                 {/* Location */}

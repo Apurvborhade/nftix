@@ -14,6 +14,7 @@ export interface Event {
     totalTickets: string;
     organizer?: string;
     contractAddress?: string;
+    eventtime: string
 }
 export function useCreateEvent() {
     return useMutation<any, any, Event>({
@@ -25,17 +26,19 @@ export function useCreateEvent() {
             location,
             ticketPrice,
             totalTickets,
-            organizer
+            organizer,
+            eventtime
         }) => {
             try {
                 console.log("Creating Event")
                 const event = await createEvent(organizer as `0x${string}`);
+                const isoString = `${eventdate}T${eventtime}:00Z`;
                 console.log("New Event: ", event)
                 const res = await axiosInstance.post(`/events/create`, {
                     name: title,
                     description,
                     category,
-                    eventdate,
+                    eventdate: isoString,
                     location,
                     ticketPrice,
                     totalTickets,
