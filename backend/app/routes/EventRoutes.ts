@@ -1,8 +1,11 @@
-import express from 'express'
+import express, { Response } from 'express'
 import { createEvent, getAllEvents, getEventByAddress, getEventsByUser } from '../controller/ticketController';
 
 const router = express.Router()
 
+router.get("/",(res:Response) => {
+    res.send("API ROUTE")
+})
 // POST /events
 router.post("/events/create", createEvent);
 

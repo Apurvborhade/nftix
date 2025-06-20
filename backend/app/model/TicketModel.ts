@@ -10,7 +10,11 @@ const TicketSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    event: EventModel
+    event: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Event', // name of the model
+        required: true,
+    }
 })
 
 export const Ticket = mongoose.model("Ticket", TicketSchema)

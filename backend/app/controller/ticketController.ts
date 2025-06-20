@@ -15,7 +15,7 @@ export const createEvent = async (req: Request, res: Response, next: NextFunctio
         ticketPrice,
         totalTickets,
         organizer,
-        contractAddress } = req.body();
+        contractAddress } = req.body;
 
     try {
         if (!name ||
@@ -37,6 +37,8 @@ export const createEvent = async (req: Request, res: Response, next: NextFunctio
             location,
             ticketPrice,
             totalTickets,
+            organizer,
+            contractAddress
         })
 
         await event.save()

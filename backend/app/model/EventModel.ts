@@ -1,10 +1,12 @@
 import mongoose from "mongoose"
 
 export enum EventCategory {
-    Technology = 'Technology',
-    Art = "Art",
-    Gaming = "Gaming",
-    Music = "Music"
+    Technology = 'technology',
+    Art = "art",
+    Gaming = "gaming",
+    Music = "music",
+    Finance="finance",
+    Sports="sports"
 }
 
 const EventSchema = new mongoose.Schema({

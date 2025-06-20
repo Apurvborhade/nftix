@@ -12,6 +12,7 @@ export const errorHandler = (
 ) => {
     const status = err.statusCode || 500;
 
+    console.log(err)
     res.status(status).json({
         error: {
             message: err.message,
