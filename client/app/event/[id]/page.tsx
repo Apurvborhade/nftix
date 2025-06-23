@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -8,6 +8,13 @@ import { motion } from "framer-motion"
 import { ArrowLeft, Calendar, MapPin, Clock, Users, Sparkles, Share2, Heart } from "lucide-react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
+import { useGetEvent, useMintTicket } from "@/hooks/event/useEvent"
+import { format } from "date-fns"
+
+import EventTicketAbi from '@/lib/contract_abi/EventTicket.json'
+import { publicClient } from "@/lib/config"
+import { ConnectKitButton } from "connectkit"
+import { useAccount } from "wagmi"
 
 interface EventDetails {
   id: string
@@ -28,50 +35,39 @@ interface EventDetails {
   agenda: { time: string; activity: string }[]
 }
 
-const mockEventDetails: { [key: string]: EventDetails } = {
-  "1": {
-    id: "1",
-    title: "ETHFest 2025",
-    organizer: "Crypto Events Co.",
-    organizerImage: "/placeholder.svg?height=60&width=60",
-    date: "March 15, 2025",
-    time: "6:00 PM - 11:00 PM",
-    venue: "Crypto Convention Center",
-    location: "San Francisco, CA",
-    category: "Technology",
-    price: "0.1 ETH",
-    totalTickets: 100,
-    soldTickets: 23,
-    image: "/placeholder.svg?height=500&width=800",
-    description:
-      "Join us for the most innovative blockchain and cryptocurrency festival of 2025. Experience cutting-edge technology, network with industry leaders, and be part of the future of finance.",
-    features: [
-      "Keynote speakers from top crypto companies",
-      "Interactive blockchain workshops",
-      "NFT art gallery",
-      "Networking sessions",
-      "Live music performances",
-      "Food and beverages included",
-    ],
-    agenda: [
-      { time: "6:00 PM", activity: "Registration & Welcome Drinks" },
-      { time: "7:00 PM", activity: "Opening Keynote: The Future of DeFi" },
-      { time: "8:00 PM", activity: "Panel Discussion: NFTs and Digital Art" },
-      { time: "9:00 PM", activity: "Networking Break" },
-      { time: "9:30 PM", activity: "Live Music Performance" },
-      { time: "10:30 PM", activity: "Closing Remarks & After Party" },
-    ],
-  },
-}
 
+async function getMintedTokensFromContract(address: `0x${string}`): Promise<number> {
+  try {
+    const data = await publicClient.readContract({
+      address,
+      abi: EventTicketAbi.abi,
+      functionName: 'mintedTokens',
+    });
+    return Number(data);
+  } catch (err) {
+    console.error('Error reading contract:', err);
+    return 0;
+  }
+}
 export default function EventPage() {
   const params = useParams()
   const eventId = params.id as string
-  const event = mockEventDetails[eventId]
+  const { isConnected, address } = useAccount()
+  const { mutate, isPending: isMinting, isSuccess } = useMintTicket()
+  const { data } = useGetEvent(eventId);
+  
+  const event = data?.event
+  // const event = mockEventDetails[eventId]
 
-  const [isWalletConnected, setIsWalletConnected] = useState(false)
-  const [isMinting, setIsMinting] = useState(false)
+
+
   const [isLiked, setIsLiked] = useState(false)
+  const [mintedTokens, setMintedTokens] = useState<number>(0);
+
+  useEffect(() => {
+    getMintedTokensFromContract(eventId as `0x${string}`).then(setMintedTokens);
+  }, [eventId]);
+
 
   if (!event) {
     return (
@@ -86,19 +82,16 @@ export default function EventPage() {
     )
   }
 
-  const connectWallet = async () => {
-    setIsWalletConnected(true)
-  }
 
   const mintTicket = async () => {
-    setIsMinting(true)
-    setTimeout(() => {
-      setIsMinting(false)
-      // Handle successful minting
-    }, 3000)
+    mutate({
+      account: address,
+      to: address,
+      event: eventId
+    })
   }
 
-  const soldPercentage = (event.soldTickets / event.totalTickets) * 100
+  const soldPercentage = (mintedTokens / event.totalTickets) * 100
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/30">
@@ -129,10 +122,16 @@ export default function EventPage() {
                 <Share2 className="w-4 h-4 mr-2" />
                 Share
               </Button>
-              {!isWalletConnected && (
-                <Button onClick={connectWallet} className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
-                  Connect Wallet
-                </Button>
+              {!isConnected && (
+                <ConnectKitButton.Custom>
+                  {({ isConnected, isConnecting, show, hide, address, ensName, chain }) => {
+                    return (
+                      <Button onClick={show} className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-full px-6">
+                        {isConnected ? `${address?.slice(0, address.length - 16)}...${address?.slice(-4)}` : "Connect Wallet"}
+                      </Button>
+                    );
+                  }}
+                </ConnectKitButton.Custom>
               )}
             </div>
           </div>
@@ -176,21 +175,21 @@ export default function EventPage() {
                     <Calendar className="w-5 h-5 text-blue-500 mr-3" />
                     <div>
                       <p className="font-semibold text-slate-800">Date</p>
-                      <p className="text-slate-600">{event.date}</p>
+                      <p className="text-slate-600">{format(new Date(event.eventdate), 'MMMM dd,yyyy')}</p>
                     </div>
                   </div>
                   <div className="flex items-center">
                     <Clock className="w-5 h-5 text-purple-500 mr-3" />
                     <div>
                       <p className="font-semibold text-slate-800">Time</p>
-                      <p className="text-slate-600">{event.time}</p>
+                      <p className="text-slate-600">{format(new Date(event.eventdate), 'h:m b')}</p>
                     </div>
                   </div>
                   <div className="flex items-center">
                     <MapPin className="w-5 h-5 text-green-500 mr-3" />
                     <div>
                       <p className="font-semibold text-slate-800">Venue</p>
-                      <p className="text-slate-600">{event.venue}</p>
+                      <p className="text-slate-600">{event.location}</p>
                     </div>
                   </div>
                   <div className="flex items-center">
@@ -208,7 +207,14 @@ export default function EventPage() {
                 <div className="mb-8">
                   <h3 className="text-xl font-bold mb-4 text-slate-800">What's Included</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {event.features.map((feature, index) => (
+                    {[
+                      "Keynote speakers from top crypto companies",
+                      "Interactive blockchain workshops",
+                      "NFT art gallery",
+                      "Networking sessions",
+                      "Live music performances",
+                      "Food and beverages included",
+                    ].map((feature, index) => (
                       <div key={index} className="flex items-center">
                         <Sparkles className="w-4 h-4 text-blue-500 mr-2 flex-shrink-0" />
                         <span className="text-slate-600">{feature}</span>
@@ -221,7 +227,14 @@ export default function EventPage() {
                 <div>
                   <h3 className="text-xl font-bold mb-4 text-slate-800">Event Agenda</h3>
                   <div className="space-y-4">
-                    {event.agenda.map((item, index) => (
+                    {[
+                      { time: "6:00 PM", activity: "Registration & Welcome Drinks" },
+                      { time: "7:00 PM", activity: "Opening Keynote: The Future of DeFi" },
+                      { time: "8:00 PM", activity: "Panel Discussion: NFTs and Digital Art" },
+                      { time: "9:00 PM", activity: "Networking Break" },
+                      { time: "9:30 PM", activity: "Live Music Performance" },
+                      { time: "10:30 PM", activity: "Closing Remarks & After Party" },
+                    ].map((item, index) => (
                       <div key={index} className="flex items-start">
                         <div className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-semibold mr-4 flex-shrink-0">
                           {item.time}
@@ -246,7 +259,7 @@ export default function EventPage() {
               <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm">
                 <CardContent className="p-6">
                   <div className="text-center mb-6">
-                    <div className="text-3xl font-bold text-slate-800 mb-2">{event.price}</div>
+                    <div className="text-3xl font-bold text-slate-800 mb-2">{event.ticketPrice} ETH</div>
                     <p className="text-slate-600">per NFT ticket</p>
                   </div>
 
@@ -254,7 +267,7 @@ export default function EventPage() {
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-slate-600">Tickets sold</span>
                       <span className="font-semibold">
-                        {event.soldTickets}/{event.totalTickets}
+                        {mintedTokens}/{event.totalTickets}
                       </span>
                     </div>
                     <div className="w-full bg-slate-200 rounded-full h-3">
@@ -269,7 +282,7 @@ export default function EventPage() {
                   <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                     <Button
                       onClick={mintTicket}
-                      disabled={!isWalletConnected || isMinting}
+                      disabled={!isConnected || isMinting}
                       className="w-full py-4 text-lg font-semibold bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl mb-4"
                     >
                       {isMinting ? (
@@ -285,7 +298,7 @@ export default function EventPage() {
                     </Button>
                   </motion.div>
 
-                  {!isWalletConnected && (
+                  {!isConnected && (
                     <p className="text-sm text-slate-500 text-center">Connect your wallet to purchase tickets</p>
                   )}
 
@@ -293,7 +306,7 @@ export default function EventPage() {
                     <div className="space-y-2 text-sm text-slate-600">
                       <div className="flex justify-between">
                         <span>Ticket Price</span>
-                        <span>{event.price}</span>
+                        <span>{event.ticketPrice}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Platform Fee</span>

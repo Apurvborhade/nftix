@@ -7,52 +7,19 @@ import { Badge } from "@/components/ui/badge"
 import { motion } from "framer-motion"
 import { ArrowLeft, Calendar, MapPin, Ticket, QrCode, Share2, Download } from "lucide-react"
 import Link from "next/link"
+import { useAccount } from "wagmi"
+import { useGetTickets, UserTicket } from "@/hooks/event/useEvent"
+import { format } from "date-fns"
 
-interface UserTicket {
-  id: string
-  eventTitle: string
-  eventDate: string
-  eventTime: string
-  venue: string
-  location: string
-  seat: string
-  ticketId: string
-  image: string
-  qrCode: string
-  status: "active" | "used" | "expired"
-}
 
-const mockUserTickets: UserTicket[] = [
-  {
-    id: "1",
-    eventTitle: "ETHFest 2025",
-    eventDate: "March 15, 2025",
-    eventTime: "6:00 PM - 11:00 PM",
-    venue: "Crypto Convention Center",
-    location: "San Francisco, CA",
-    seat: "VIP Section A - Row 3, Seat 12",
-    ticketId: "#ETH2025-024",
-    image: "/placeholder.svg?height=300&width=400",
-    qrCode: "/placeholder.svg?height=200&width=200",
-    status: "active",
-  },
-  {
-    id: "2",
-    eventTitle: "NFT Art Gallery Opening",
-    eventDate: "March 20, 2025",
-    eventTime: "7:00 PM - 10:00 PM",
-    venue: "Modern Art Museum",
-    location: "New York, NY",
-    seat: "General Admission",
-    ticketId: "#ART2025-156",
-    image: "/placeholder.svg?height=300&width=400",
-    qrCode: "/placeholder.svg?height=200&width=200",
-    status: "active",
-  },
-]
+
 
 export default function MyTicketsPage() {
   const [selectedTicket, setSelectedTicket] = useState<UserTicket | null>(null)
+  const { address: user } = useAccount()
+
+
+  const { data: tickets } = useGetTickets(user as `0x${string}`)
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -92,7 +59,7 @@ export default function MyTicketsPage() {
       </motion.header>
 
       <div className="container mx-auto px-4 py-8">
-        {mockUserTickets.length === 0 ? (
+        {tickets?.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -112,9 +79,9 @@ export default function MyTicketsPage() {
             <div>
               <h2 className="text-2xl font-bold text-slate-800 mb-6">Your NFT Tickets</h2>
               <div className="space-y-4">
-                {mockUserTickets.map((ticket, index) => (
+                {tickets?.map((ticket, index) => (
                   <motion.div
-                    key={ticket.id}
+                    key={ticket._id}
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: index * 0.1 }}
@@ -123,32 +90,32 @@ export default function MyTicketsPage() {
                     className="cursor-pointer"
                   >
                     <Card
-                      className={`overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm ${
-                        selectedTicket?.id === ticket.id ? "ring-2 ring-blue-300" : ""
-                      }`}
+                      className={`overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm ${selectedTicket?.id === ticket.id ? "ring-2 ring-blue-300" : ""
+                        }`}
                     >
                       <div className="flex">
                         <img
                           src={ticket.image || "/placeholder.svg"}
-                          alt={ticket.eventTitle}
+                          alt={ticket.event.title}
                           className="w-24 h-24 object-cover"
                         />
                         <CardContent className="flex-1 p-4">
                           <div className="flex items-start justify-between mb-2">
-                            <h3 className="font-bold text-slate-800">{ticket.eventTitle}</h3>
-                            <Badge className={getStatusColor(ticket.status)}>
-                              {ticket.status.charAt(0).toUpperCase() + ticket.status.slice(1)}
+                            <h3 className="font-bold text-slate-800">{ticket.event.name}</h3>
+                            <Badge className={getStatusColor("active")}>
+                              Active
+                              {/* {ticket.status.charAt(0).toUpperCase() + ticket.status.slice(1)} */}
                             </Badge>
                           </div>
 
                           <div className="space-y-1 text-sm text-slate-600">
                             <div className="flex items-center">
                               <Calendar className="w-3 h-3 mr-2" />
-                              {ticket.eventDate}
+                              {format(new Date(ticket.event.eventdate), 'MMMM dd,yyyy')}
                             </div>
                             <div className="flex items-center">
                               <MapPin className="w-3 h-3 mr-2" />
-                              {ticket.venue}
+                              {ticket.event.location}
                             </div>
                             <div className="flex items-center">
                               <Ticket className="w-3 h-3 mr-2" />
@@ -177,12 +144,13 @@ export default function MyTicketsPage() {
                       <div className="text-center mb-6">
                         <img
                           src={selectedTicket.image || "/placeholder.svg"}
-                          alt={selectedTicket.eventTitle}
+                          alt={selectedTicket.event.name}
                           className="w-full h-48 object-cover rounded-lg mb-4"
                         />
-                        <h3 className="text-xl font-bold text-slate-800 mb-2">{selectedTicket.eventTitle}</h3>
-                        <Badge className={getStatusColor(selectedTicket.status)}>
-                          {selectedTicket.status.charAt(0).toUpperCase() + selectedTicket.status.slice(1)}
+                        <h3 className="text-xl font-bold text-slate-800 mb-2">{selectedTicket.event.name}</h3>
+                        <Badge className={getStatusColor("active")}>
+                          Active
+                          {/* {selectedTicket.status.charAt(0).toUpperCase() + selectedTicket.status.slice(1)} */}
                         </Badge>
                       </div>
 
@@ -191,8 +159,8 @@ export default function MyTicketsPage() {
                           <Calendar className="w-5 h-5 text-blue-500 mr-3 mt-0.5 flex-shrink-0" />
                           <div>
                             <div className="font-semibold text-slate-700">Date & Time</div>
-                            <div className="text-slate-600">{selectedTicket.eventDate}</div>
-                            <div className="text-slate-600">{selectedTicket.eventTime}</div>
+                            <div className="text-slate-600">{format(new Date(selectedTicket.event.eventdate), 'MMMM dd,yyyy')}</div>
+                            <div className="text-slate-600">{format(new Date(selectedTicket.event.eventdate), 'h:m b')}</div>
                           </div>
                         </div>
 
@@ -200,8 +168,8 @@ export default function MyTicketsPage() {
                           <MapPin className="w-5 h-5 text-purple-500 mr-3 mt-0.5 flex-shrink-0" />
                           <div>
                             <div className="font-semibold text-slate-700">Venue</div>
-                            <div className="text-slate-600">{selectedTicket.venue}</div>
-                            <div className="text-slate-600">{selectedTicket.location}</div>
+                            <div className="text-slate-600">{selectedTicket.event.location}</div>
+
                           </div>
                         </div>
 
@@ -209,7 +177,7 @@ export default function MyTicketsPage() {
                           <Ticket className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
                           <div>
                             <div className="font-semibold text-slate-700">Seat</div>
-                            <div className="text-slate-600">{selectedTicket.seat}</div>
+                            {/* <div className="text-slate-600">{selectedTicket.seat}</div> */}
                           </div>
                         </div>
                       </div>

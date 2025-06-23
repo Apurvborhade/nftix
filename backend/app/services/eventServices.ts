@@ -4,7 +4,10 @@ import { wallet } from "../lib/wallet";
 import { EventModel } from "../model/EventModel";
 import { CustomError } from "../middleware/errorHandler";
 
+
+
 export const getEvents = async (req: Request, res: Response) => {
+    console.log("Address: ",EVENTFACTORY_ADDRESS)
     const eventsAddress = await wallet.readContract({
         address: EVENTFACTORY_ADDRESS as `0x${string}`,
         abi: EVENTFACTORY_ABI.abi,

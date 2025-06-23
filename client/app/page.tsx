@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -10,115 +10,11 @@ import { Search, Calendar, MapPin, Users, Sparkles, Plus, Filter, TrendingUp } f
 import Link from "next/link"
 import { ConnectKitButton } from "connectkit"
 import { useAccount } from "wagmi"
+import { Event, useGetEvents } from "@/hooks/event/useEvent"
+import { format } from "date-fns"
+import { publicClient } from "@/lib/config"
+import EventTicketAbi from '@/lib/contract_abi/EventTicket.json'
 
-interface Event {
-  id: string
-  title: string
-  organizer: string
-  date: string
-  time: string
-  venue: string
-  location: string
-  category: string
-  price: string
-  totalTickets: number
-  soldTickets: number
-  image: string
-  featured: boolean
-}
-
-const mockEvents: Event[] = [
-  {
-    id: "1",
-    title: "ETHFest 2025",
-    organizer: "Crypto Events Co.",
-    date: "March 15, 2025",
-    time: "6:00 PM",
-    venue: "Crypto Convention Center",
-    location: "San Francisco, CA",
-    category: "Technology",
-    price: "0.1 ETH",
-    totalTickets: 100,
-    soldTickets: 23,
-    image: "/placeholder.svg?height=300&width=400",
-    featured: true,
-  },
-  {
-    id: "2",
-    title: "NFT Art Gallery Opening",
-    organizer: "Digital Arts Foundation",
-    date: "March 20, 2025",
-    time: "7:00 PM",
-    venue: "Modern Art Museum",
-    location: "New York, NY",
-    category: "Art",
-    price: "0.05 ETH",
-    totalTickets: 200,
-    soldTickets: 156,
-    image: "/placeholder.svg?height=300&width=400",
-    featured: true,
-  },
-  {
-    id: "3",
-    title: "Web3 Developer Conference",
-    organizer: "DevDAO",
-    date: "April 2, 2025",
-    time: "9:00 AM",
-    venue: "Tech Hub Center",
-    location: "Austin, TX",
-    category: "Technology",
-    price: "0.08 ETH",
-    totalTickets: 500,
-    soldTickets: 342,
-    image: "/placeholder.svg?height=300&width=400",
-    featured: false,
-  },
-  {
-    id: "4",
-    title: "Metaverse Music Festival",
-    organizer: "Virtual Events Ltd",
-    date: "April 10, 2025",
-    time: "8:00 PM",
-    venue: "Virtual Reality Space",
-    location: "Metaverse",
-    category: "Music",
-    price: "0.12 ETH",
-    totalTickets: 1000,
-    soldTickets: 789,
-    image: "/placeholder.svg?height=300&width=400",
-    featured: true,
-  },
-  {
-    id: "5",
-    title: "Blockchain Gaming Summit",
-    organizer: "GameFi Alliance",
-    date: "April 18, 2025",
-    time: "10:00 AM",
-    venue: "Gaming Arena",
-    location: "Los Angeles, CA",
-    category: "Gaming",
-    price: "0.06 ETH",
-    totalTickets: 300,
-    soldTickets: 145,
-    image: "/placeholder.svg?height=300&width=400",
-    featured: false,
-  },
-  {
-    id: "6",
-    title: "DeFi Investment Workshop",
-    organizer: "Finance DAO",
-    date: "May 5, 2025",
-    time: "2:00 PM",
-    venue: "Financial District Hall",
-    location: "Chicago, IL",
-    category: "Finance",
-    price: "0.15 ETH",
-    totalTickets: 150,
-    soldTickets: 89,
-    image: "/placeholder.svg?height=300&width=400",
-    featured: false,
-  },
-]
 
 const categories = ["All", "Technology", "Art", "Music", "Gaming", "Finance", "Sports"]
 
@@ -128,18 +24,18 @@ export default function HomePage() {
 
 
   const { isConnected, address } = useAccount()
+  const { data } = useGetEvents();
+  console.log(data)
 
-  const filteredEvents = mockEvents.filter((event) => {
+  const filteredEvents = data?.events?.filter((event: Event) => {
     const matchesSearch =
-      event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.organizer.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      event?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      event?.organizer?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       event.location.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesCategory = selectedCategory === "All" || event.category === selectedCategory
+    const matchesCategory = selectedCategory.toLowerCase() === "all" || event.category === selectedCategory.toLowerCase()
     return matchesSearch && matchesCategory
   })
 
-  const featuredEvents = filteredEvents.filter((event) => event.featured)
-  const regularEvents = filteredEvents.filter((event) => !event.featured)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/30">
@@ -258,7 +154,7 @@ export default function HomePage() {
       </motion.section>
 
       {/* Featured Events */}
-      {featuredEvents.length > 0 && (
+      {filteredEvents?.length > 0 && (
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -271,8 +167,8 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredEvents.map((event, index) => (
-              <EventCard key={event.id} event={event} index={index} featured />
+            {filteredEvents?.map((event: Event, index: number) => (
+              <EventCard key={event._id} event={event} index={index} featured />
             ))}
           </div>
         </motion.section>
@@ -290,12 +186,13 @@ export default function HomePage() {
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {regularEvents.map((event, index) => (
-            <EventCard key={event.id} event={event} index={index} />
-          ))}
+          {filteredEvents?.map(async (event: Event, index: number) => (
+            <EventCard key={event._id} event={event} index={index} />
+          )
+          )}
         </div>
 
-        {filteredEvents.length === 0 && (
+        {filteredEvents?.length === 0 && (
           <div className="text-center py-12">
             <p className="text-slate-500 text-lg">No events found matching your criteria.</p>
           </div>
@@ -305,9 +202,25 @@ export default function HomePage() {
   )
 }
 
+async function getMintedTokensFromContract(address: `0x${string}`): Promise<number> {
+  try {
+    const data = await publicClient.readContract({
+      address,
+      abi: EventTicketAbi.abi,
+      functionName: 'mintedTokens',
+    });
+    return Number(data);
+  } catch (err) {
+    console.error('Error reading contract:', err);
+    return 0;
+  }
+}
 function EventCard({ event, index, featured = false }: { event: Event; index: number; featured?: boolean }) {
-  const soldPercentage = (event.soldTickets / event.totalTickets) * 100
-
+  const [mintedTokens, setMintedTokens] = useState<number>(0);
+  const soldPercentage = (mintedTokens / event?.totalTickets) * 100
+  useEffect(() => {
+    getMintedTokensFromContract(event.contractAddress as `0x${string}`).then(setMintedTokens);
+  }, [event.contractAddress]);
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -316,7 +229,7 @@ function EventCard({ event, index, featured = false }: { event: Event; index: nu
       whileHover={{ y: -5, scale: 1.02 }}
       className="group"
     >
-      <Link href={`/event/${event.id}`}>
+      <Link href={`/event/${event.contractAddress}`}>
         <Card
           className={`overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm ${featured ? "ring-2 ring-blue-200" : ""
             }`}
@@ -339,25 +252,25 @@ function EventCard({ event, index, featured = false }: { event: Event; index: nu
             <h4 className="text-xl font-bold mb-2 text-slate-800 group-hover:text-blue-600 transition-colors">
               {event.title}
             </h4>
-            <p className="text-slate-600 mb-3">by {event.organizer}</p>
+            <p className="text-slate-600 mb-3">by {event?.organizer?.slice(0, 20) + '... ' + event?.organizer?.slice(-4)}</p>
 
             <div className="space-y-2 mb-4">
               <div className="flex items-center text-sm text-slate-600">
                 <Calendar className="w-4 h-4 mr-2" />
-                {event.date} at {event.time}
+                {format(new Date(event.eventdate), 'MMMM dd,yyyy')} at {format(new Date(event.eventdate), 'h:m b')}
               </div>
               <div className="flex items-center text-sm text-slate-600">
                 <MapPin className="w-4 h-4 mr-2" />
-                {event.venue}, {event.location}
+                {event.location}
               </div>
             </div>
 
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center text-sm text-slate-600">
                 <Users className="w-4 h-4 mr-1" />
-                {event.soldTickets}/{event.totalTickets} sold
+                {mintedTokens}/{event.totalTickets} sold
               </div>
-              <div className="text-lg font-bold text-slate-800">{event.price}</div>
+              <div className="text-lg font-bold text-slate-800">{event.ticketPrice} ETH</div>
             </div>
 
             <div className="w-full bg-slate-200 rounded-full h-2 mb-4">

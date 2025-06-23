@@ -7,7 +7,9 @@ async function main() {
 
     const TicketFactory = await hre.ethers.getContractFactory("TicketFactory");
     const event = await TicketFactory.deploy();
-    console.log("🎟️ EventTicket deployed to:", event.target);
+    console.log("🎟️ TicketFactory deployed to:", event.target);
+
+    
 }
 
 main().catch((error) => {

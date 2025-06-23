@@ -1,6 +1,7 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import APIRoutes from './routes/EventRoutes'
+import TicketRoutes from './routes/TicketRoutes'
 import { connectDB } from './lib/db';
 import { errorHandler } from './middleware/errorHandler';
 import cors from 'cors'
@@ -14,6 +15,7 @@ const PORT = process.env.PORT || 8000;
 connectDB()
 
 app.use("/api", APIRoutes);
+app.use("/api", TicketRoutes);
 
 
 // Error Handler

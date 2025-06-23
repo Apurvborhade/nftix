@@ -88,7 +88,7 @@ export const getEventByAddress = async (req: Request, res: Response, next: NextF
     const { contractAddress } = req.query
 
     try {
-        const eventDetails = await EventModel.findOne({ contractAddress })
+        const eventDetails = await EventModel.findOne({ contractAddress: contractAddress })
 
         if (!eventDetails) {
             throw new Error("Cannot Find Event") as CustomError
@@ -105,20 +105,29 @@ export const getEventByAddress = async (req: Request, res: Response, next: NextF
 
 export const mintTicket = async (req: Request, res: Response, next: NextFunction) => {
     const { event, owner, ticketId } = req.body;
+    console.log("Minting Ticket", event, owner, ticketId);
     try {
+        if (!event || !owner || !ticketId) {
+            throw new Error("Provide all required info.") as CustomError
+        }
+
+        const eventObject = await EventModel.findOne({ contractAddress: event })
         const ticket = new Ticket({
             owner,
-            event,
+            event: eventObject,
             ticketId
         })
+
         await ticket.save()
+
+        res.status(201).json(ticket)
     } catch (error) {
         next(error)
     }
 }
 
 export const getTickets = async (req: Request, res: Response, next: NextFunction) => {
-    const { user } = req.params
+    const { user } = req.query
 
     try {
         const tickets = await Ticket.find({

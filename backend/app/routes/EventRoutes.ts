@@ -16,7 +16,7 @@ router.get("/events", getAllEvents);
 router.get("/events/:userAddress", getEventsByUser);
 
 // GET /events?contractAddress=0x29y18e19821
-router.get("/events/event", getEventByAddress);
+router.get("/event", getEventByAddress);
 
 
 export default router;
