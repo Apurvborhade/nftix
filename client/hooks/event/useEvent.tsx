@@ -3,6 +3,7 @@ import { publicClient } from "@/lib/config";
 import { createEvent, mintTicket } from "@/utils/blockChainServices";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
+import { parseEther } from "viem";
 
 export interface Event {
     _id?: string;
@@ -31,9 +32,10 @@ export function useCreateEvent() {
             organizer,
             eventtime
         }) => {
+
             try {
                 console.log("Creating Event")
-                const event = await createEvent(organizer as `0x${string}`);
+                const event = await createEvent(title, organizer as `0x${string}`, parseEther(ticketPrice));
                 const isoString = `${eventdate}T${eventtime}:00Z`;
                 console.log("New Event: ", event)
                 const res = await axiosInstance.post(`/events/create`, {
@@ -100,10 +102,10 @@ export function useGetEvent(contractAddress: string) {
 export function useMintTicket() {
     return useMutation<void, any, any>({
         mutationKey: ['mint-ticket'],
-        mutationFn: async ({ account, to, event }) => {
+        mutationFn: async ({ account, to, event, ticketPrice }) => {
             try {
                 console.log("mint")
-                const TokenID = await mintTicket(account, to, event);
+                const TokenID = await mintTicket(account, to, event, ticketPrice);
                 console.log("TokenID: ", TokenID)
                 const res = await axiosInstance.post(`/ticket/mint`, {
                     event,
@@ -118,7 +120,8 @@ export function useMintTicket() {
                     axiosErr.response?.data?.message || axiosErr.message || "Upload failed";
                 throw new Error(message);
             }
-        }
+        },
+        
     })
 }
 

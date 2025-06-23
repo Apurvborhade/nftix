@@ -10,9 +10,15 @@ contract TicketFactory {
     event EventCreated(address indexed eventAddress);
     function createEvent(
         string memory _eventName,
-        string memory _symbol
-    ) external  {
-        EventTicket newEvent = new EventTicket(_eventName, _symbol, msg.sender);
+        string memory _symbol,
+        uint _mintPrice
+    ) external {
+        EventTicket newEvent = new EventTicket(
+            _eventName,
+            _symbol,
+            _mintPrice,
+            msg.sender
+        );
 
         allEvents.push(address(newEvent));
 

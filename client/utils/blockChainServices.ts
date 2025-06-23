@@ -8,12 +8,12 @@ const TICKET_FACTORY_ABI = TicketFactoryAbi.abi;
 const EVENT_TICKET = EventTicket.abi;
 
 
-export const createEvent = async (account: `0x${string}`) => {
+export const createEvent = async (eventName: string, account: `0x${string}`, eventPrice: bigint) => {
     const { request } = await simulateContract(config, {
         address: TICKET_FACTORY as `0x${string}`,
         abi: TICKET_FACTORY_ABI,
         functionName: 'createEvent',
-        args: ['event', 'EVE'],
+        args: [eventName, eventName.slice(0, 2).toUpperCase(), eventPrice],
         account
     })
     const hash = await writeContract(config, request);
@@ -40,7 +40,7 @@ export const createEvent = async (account: `0x${string}`) => {
 
     throw new Error('EventCreated log not found');
 }
-export const mintTicket = async (account: `0x${string}`, to: `0x${string}`, event: `0x${string}`) => {
+export const mintTicket = async (account: `0x${string}`, to: `0x${string}`, event: `0x${string}`,ticketPrice:string) => {
     try {
         const { request } = await simulateContract(config, {
             address: event as `0x${string}`,
@@ -48,7 +48,7 @@ export const mintTicket = async (account: `0x${string}`, to: `0x${string}`, even
             functionName: 'mintTicket',
             args: [to],
             account,
-            value: parseEther('0.01')
+            value: parseEther(ticketPrice)
         })
         const hash = await writeContract(config, request);
 
@@ -59,7 +59,7 @@ export const mintTicket = async (account: `0x${string}`, to: `0x${string}`, even
         const abi = [
             parseAbiItem('event TicketMinted(address indexed recipient, uint tokenId)'),
             parseAbiItem('event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)')
-          ];
+        ];
         for (const log of receipt.logs) {
             try {
                 const parsedLog = decodeEventLog({

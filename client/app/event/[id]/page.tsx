@@ -55,7 +55,7 @@ export default function EventPage() {
   const { isConnected, address } = useAccount()
   const { mutate, isPending: isMinting, isSuccess } = useMintTicket()
   const { data } = useGetEvent(eventId);
-  
+
   const event = data?.event
   // const event = mockEventDetails[eventId]
 
@@ -87,7 +87,8 @@ export default function EventPage() {
     mutate({
       account: address,
       to: address,
-      event: eventId
+      event: eventId,
+      tickerPrice: event.ticketPrice
     })
   }
 

@@ -8,15 +8,17 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 contract EventTicket is ERC721, Ownable {
     uint public maxSupply = 100;
     uint public currentSupply;
-    uint public mintPrice = 0.01 ether;
+    uint public mintPrice;
     address public organizer;
 
     constructor(
         string memory _tokenName,
         string memory _tokenSymbol,
+        uint _mintPrice,
         address initialOwner
     ) ERC721(_tokenName, _tokenSymbol) Ownable(initialOwner) {
         organizer = msg.sender;
+        mintPrice = _mintPrice;
     }
 
     event TicketMinted(address indexed recipient, uint tokenId);
