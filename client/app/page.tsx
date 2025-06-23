@@ -23,18 +23,22 @@ export default function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState("All")
 
 
+
   const { isConnected, address } = useAccount()
   const { data } = useGetEvents();
-  console.log(data)
 
-  const filteredEvents = data?.events?.filter((event: Event) => {
-    const matchesSearch =
-      event?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event?.organizer?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.location.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesCategory = selectedCategory.toLowerCase() === "all" || event.category === selectedCategory.toLowerCase()
-    return matchesSearch && matchesCategory
-  })
+
+  
+    const filteredEvents=  data?.events?.filter((event: Event) => {
+      const matchesSearch =
+        event?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        event?.organizer?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        event.location.toLowerCase().includes(searchQuery.toLowerCase())
+      const matchesCategory = selectedCategory.toLowerCase() === "all" || event.category === selectedCategory.toLowerCase()
+      return matchesSearch && matchesCategory
+    })
+ 
+
 
 
   return (
@@ -186,7 +190,7 @@ export default function HomePage() {
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredEvents?.map(async (event: Event, index: number) => (
+          {filteredEvents?.map((event: Event, index: number) => (
             <EventCard key={event._id} event={event} index={index} />
           )
           )}
