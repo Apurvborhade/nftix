@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app/server.ts"
+    "start": "ts-node app/server.ts",
+    "dev": "nodemon app/server.ts"
   },
   "author": "apurva",
   "license": "MIT",
