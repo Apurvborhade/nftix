@@ -19,7 +19,7 @@ app.use("/api", TicketRoutes);
 app.use('/ping', (req: Request, res: Response) => {
     res.send("Server Working perfectly 🟢")
 })
-
+console.log("Memory usage at start:", process.memoryUsage());
 // Error Handler
 app.use(errorHandler)
 
