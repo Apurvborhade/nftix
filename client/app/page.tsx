@@ -1,295 +1,232 @@
-"use client"
-
-import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { motion } from "framer-motion"
-import { Search, Calendar, MapPin, Users, Sparkles, Plus, Filter, TrendingUp } from "lucide-react"
+import { Ticket, Shield, Eye, Coins, ArrowRight, Star, Twitter, Github, MessageCircle, FileText } from "lucide-react"
 import Link from "next/link"
-import { ConnectKitButton } from "connectkit"
-import { useAccount } from "wagmi"
-import { Event, useGetEvents } from "@/hooks/event/useEvent"
-import { format } from "date-fns"
-import { publicClient } from "@/lib/config"
-import EventTicketAbi from '@/lib/contract_abi/EventTicket.json'
 
-
-const categories = ["All", "Technology", "Art", "Music", "Gaming", "Finance", "Sports"]
-
-export default function HomePage() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState("All")
-
-
-
-  const { isConnected, address } = useAccount()
-  const { data } = useGetEvents();
-
-
-  
-    const filteredEvents=  data?.events?.filter((event: Event) => {
-      const matchesSearch =
-        event?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        event?.organizer?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        event.location.toLowerCase().includes(searchQuery.toLowerCase())
-      const matchesCategory = selectedCategory.toLowerCase() === "all" || event.category === selectedCategory.toLowerCase()
-      return matchesSearch && matchesCategory
-    })
- 
-
-
-
+export default function NFTixLanding() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/30">
-      {/* Header */}
-      <motion.header
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50 shadow-sm"
-      >
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <motion.div className="flex items-center space-x-2" whileHover={{ scale: 1.02 }}>
-              <Sparkles className="w-8 h-8 text-blue-500" />
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                TicketChain
-              </h1>
-            </motion.div>
+    <div className="min-h-screen bg-gray-50 text-gray-900 relative overflow-hidden scroll-smooth">
+      {/* Grid Background */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.03)_1px,transparent_1px)] bg-[size:50px_50px]" />
 
-            <nav className="hidden md:flex items-center space-x-6">
-              <Link href="/" className="text-slate-600 hover:text-slate-900 transition-colors">
-                Events
+      {/* Gradient Overlays */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-100/50 via-transparent to-purple-100/50" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-blue-200/30 rounded-full blur-3xl" />
+
+      {/* Header */}
+      <header className="relative z-10 flex items-center justify-between px-6 py-4 lg:px-8 bg-white/40 backdrop-blur-sm border-b border-gray-200">
+        <div className="flex items-center space-x-2">
+          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+            <Ticket className="w-5 h-5 text-white" />
+          </div>
+          <span className="text-xl font-bold text-gray-900">NFTix</span>
+        </div>
+
+        <nav className="hidden md:flex items-center space-x-8">
+          <Link href="#how-it-works" className="text-gray-600 hover:text-gray-900 transition-colors">
+            How It Works
+          </Link>
+          <Link href="#benefits" className="text-gray-600 hover:text-gray-900 transition-colors">
+            Benefits
+          </Link>
+          <Link href="#pricing" className="text-gray-600 hover:text-gray-900 transition-colors">
+            Early Access
+          </Link>
+          
+        </nav>
+
+        <Link href={'/explore'}>
+          <Button className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-full px-6">Get Started</Button>
+        </Link>
+      </header>
+
+      {/* Hero Section */}
+      <section className="relative z-10 flex flex-col items-center justify-center min-h-[80vh] px-6 text-center">
+        <Badge
+          variant="outline"
+          className="mb-8 bg-yellow-50 border-yellow-200 text-yellow-700 backdrop-blur-sm animate-pulse shadow-sm"
+        >
+          <Star className="w-4 h-4 mr-2" />
+          Launching Soon
+        </Badge>
+
+        <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 bg-clip-text text-transparent leading-tight">
+          Decentralized Event Ticketing
+          <br />
+          For Everyone
+        </h1>
+
+        <p className="text-xl md:text-xl text-gray-600 mb-12 max-w-4xl leading-relaxed">
+        The Web3 way to book and trade your event tickets — simple, secure, and seamless.
+        </p>
+
+        <div className="flex flex-col sm:flex-row gap-4">
+          <Link href={'/explore'}>
+            <Button
+              size="lg"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 px-8 py-4 text-lg font-semibold shadow-lg shadow-blue-500/25"
+            >
+              Get Started
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+          </Link>
+          <Button
+            size="lg"
+            variant="outline"
+            className="bg-white/80 border-gray-300 text-gray-900 hover:bg-gray-50 backdrop-blur-sm px-8 py-4 text-lg shadow-sm"
+          >
+            Learn More
+          </Button>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section id="how-it-works" className="relative z-10 py-24 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">How It Works</h2>
+            <p className="text-xl text-gray-600">Three simple steps to revolutionize event ticketing</p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="text-center group">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                <Coins className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold mb-4 text-gray-900">1. Mint Your NFT Ticket</h3>
+              <p className="text-gray-600">
+                Create unique, verifiable tickets as NFTs with built-in smart contract functionality.
+              </p>
+            </div>
+
+            <div className="text-center group">
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                <ArrowRight className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold mb-4 text-gray-900">2. Trade or Transfer Securely</h3>
+              <p className="text-gray-600">
+                Safely transfer tickets to others with full blockchain transparency and security.
+              </p>
+            </div>
+
+            <div className="text-center group">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                <Shield className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold mb-4 text-gray-900">3. Validate Ticket on Entry</h3>
+              <p className="text-gray-600">
+                Instant verification at events with QR codes linked to blockchain records.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Benefits Section */}
+      <section id="benefits" className="relative z-10 py-24 px-6 bg-white/50">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Why Choose NFTix</h2>
+            <p className="text-xl text-gray-600">Built for the future of event management</p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-2xl p-8 hover:border-blue-300 hover:shadow-lg transition-all shadow-sm">
+              <Shield className="w-12 h-12 text-blue-500 mb-6" />
+              <h3 className="text-xl font-semibold mb-4 text-gray-900">Immutable Proof of Ownership</h3>
+              <p className="text-gray-600">
+                Every ticket is permanently recorded on the blockchain, providing undeniable proof of authenticity.
+              </p>
+            </div>
+
+            <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-2xl p-8 hover:border-purple-300 hover:shadow-lg transition-all shadow-sm">
+              <Eye className="w-12 h-12 text-purple-500 mb-6" />
+              <h3 className="text-xl font-semibold mb-4 text-gray-900">Fraud Prevention</h3>
+              <p className="text-gray-600">
+                Smart contracts eliminate counterfeit tickets and ensure only valid holders can enter events.
+              </p>
+            </div>
+
+            <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-2xl p-8 hover:border-green-300 hover:shadow-lg transition-all shadow-sm">
+              <Ticket className="w-12 h-12 text-green-500 mb-6" />
+              <h3 className="text-xl font-semibold mb-4 text-gray-900">Real-time Ticket Tracking</h3>
+              <p className="text-gray-600">
+                Monitor ticket transfers, sales, and usage in real-time with complete transparency.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing CTA */}
+      <section id="pricing" className="relative z-10 py-24 px-6">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="bg-gradient-to-r from-blue-50 to-purple-50 backdrop-blur-sm border border-gray-200 rounded-3xl p-12 shadow-xl">
+            <Badge className="bg-yellow-100 text-yellow-700 border-yellow-200 mb-6">Early Access</Badge>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">
+              Zero Platform Fees for Early Access Users
+            </h2>
+            <p className="text-xl text-gray-600 mb-8">
+              Join our beta program and enjoy commission-free ticket minting and trading for the first 6 months.
+            </p>
+            <Button
+              size="lg"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 px-8 py-4 text-lg font-semibold shadow-lg"
+            >
+              Get Early Access
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="relative z-10 border-t border-gray-200 py-12 px-6 bg-white/80">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="flex items-center space-x-2 mb-6 md:mb-0">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                <Ticket className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-xl font-bold text-gray-900">NFTix</span>
+            </div>
+
+            <nav className="flex items-center space-x-8 mb-6 md:mb-0">
+              <Link href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
+                Home
               </Link>
-              <Link href="/create-event" className="text-slate-600 hover:text-slate-900 transition-colors">
-                Create Event
+              <Link href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
+                Blog
               </Link>
-              <Link href="/my-tickets" className="text-slate-600 hover:text-slate-900 transition-colors">
-                My Tickets
+              <Link href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
+                Docs
+              </Link>
+              <Link href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
+                Contact
               </Link>
             </nav>
 
             <div className="flex items-center space-x-4">
-              {isConnected && address && (
-                <Link href="/create-event">
-                  <Button variant="outline" className="hidden md:flex items-center">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Create Event
-                  </Button>
-                </Link>
-              )}
-
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                {/* <Button
-                  onClick={connectWallet}
-                  disabled={isWalletConnected}
-                  className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-full px-6"
-                >
-                  {isWalletConnected ? `${walletAddress}` : "Connect Wallet"}
-                </Button> */}
-                <ConnectKitButton.Custom>
-                  {({ isConnected, isConnecting, show, hide, address, ensName, chain }) => {
-                    return (
-                      <Button onClick={show} className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-full px-6">
-                        {isConnected ? `${address?.slice(0, address.length - 16)}...${address?.slice(-4)}` : "Connect Wallet"}
-                      </Button>
-                    );
-                  }}
-                </ConnectKitButton.Custom>
-              </motion.div>
+              <Link href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
+                <Twitter className="w-5 h-5" />
+              </Link>
+              <Link href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
+                <Github className="w-5 h-5" />
+              </Link>
+              <Link href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
+                <MessageCircle className="w-5 h-5" />
+              </Link>
+              <Link href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
+                <FileText className="w-5 h-5" />
+              </Link>
             </div>
           </div>
-        </div>
-      </motion.header>
 
-      {/* Hero Section */}
-      <motion.section
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="container mx-auto px-4 py-12"
-      >
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-            Discover Amazing Events
-          </h2>
-          <p className="text-xl text-slate-600 mb-8 max-w-2xl mx-auto">
-            The world's first NFT-powered event ticketing platform. Secure, transparent, and tradeable tickets.
-          </p>
-
-          {/* Search and Filter */}
-          <div className="max-w-4xl mx-auto">
-            <div className="flex flex-col md:flex-row gap-4 mb-8">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
-                <Input
-                  placeholder="Search events, organizers, or locations..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 py-3 text-lg border-slate-200 focus:border-blue-300 focus:ring-blue-200"
-                />
-              </div>
-              <Button variant="outline" className="px-6 py-3">
-                <Filter className="w-4 h-4 mr-2" />
-                Filters
-              </Button>
-            </div>
-
-            {/* Category Filter */}
-            <div className="flex flex-wrap justify-center gap-2 mb-8">
-              {categories.map((category) => (
-                <Button
-                  key={category}
-                  variant={selectedCategory === category ? "default" : "outline"}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`rounded-full ${selectedCategory === category
-                    ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white"
-                    : "hover:bg-slate-100"
-                    }`}
-                >
-                  {category}
-                </Button>
-              ))}
-            </div>
+          <div className="border-t border-gray-200 mt-8 pt-8 text-center text-gray-600">
+            <p>&copy; 2025 NFTix. All rights reserved. Built on blockchain technology.</p>
           </div>
         </div>
-      </motion.section>
-
-      {/* Featured Events */}
-      {filteredEvents?.length > 0 && (
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="container mx-auto px-4 py-8"
-        >
-          <div className="flex items-center mb-8">
-            <TrendingUp className="w-6 h-6 text-blue-500 mr-2" />
-            <h3 className="text-2xl font-bold text-slate-800">Featured Events</h3>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredEvents?.map((event: Event, index: number) => (
-              <EventCard key={event._id} event={event} index={index} featured />
-            ))}
-          </div>
-        </motion.section>
-      )}
-
-      {/* All Events */}
-      <motion.section
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.4 }}
-        className="container mx-auto px-4 py-8"
-      >
-        <h3 className="text-2xl font-bold text-slate-800 mb-8">
-          {selectedCategory === "All" ? "All Events" : `${selectedCategory} Events`}
-        </h3>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredEvents?.map((event: Event, index: number) => (
-            <EventCard key={event._id} event={event} index={index} />
-          )
-          )}
-        </div>
-
-        {filteredEvents?.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-slate-500 text-lg">No events found matching your criteria.</p>
-          </div>
-        )}
-      </motion.section>
+      </footer>
     </div>
-  )
-}
-
-async function getMintedTokensFromContract(address: `0x${string}`): Promise<number> {
-  try {
-    const data = await publicClient.readContract({
-      address,
-      abi: EventTicketAbi.abi,
-      functionName: 'mintedTokens',
-    });
-    return Number(data);
-  } catch (err) {
-    console.error('Error reading contract:', err);
-    return 0;
-  }
-}
-function EventCard({ event, index, featured = false }: { event: Event; index: number; featured?: boolean }) {
-  const [mintedTokens, setMintedTokens] = useState<number>(0);
-  const soldPercentage = (mintedTokens / event?.totalTickets) * 100
-  useEffect(() => {
-    getMintedTokensFromContract(event.contractAddress as `0x${string}`).then(setMintedTokens);
-  }, [event.contractAddress]);
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: index * 0.1 }}
-      whileHover={{ y: -5, scale: 1.02 }}
-      className="group"
-    >
-      <Link href={`/event/${event.contractAddress}`}>
-        <Card
-          className={`overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm ${featured ? "ring-2 ring-blue-200" : ""
-            }`}
-        >
-          <div className="relative">
-            <img
-              src={event.image || "/placeholder.svg"}
-              alt={event.title}
-              className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-            />
-            {featured && (
-              <Badge className="absolute top-3 left-3 bg-gradient-to-r from-yellow-400 to-orange-400 text-white">
-                Featured
-              </Badge>
-            )}
-            <Badge className="absolute top-3 right-3 bg-white/90 text-slate-700">{event.category}</Badge>
-          </div>
-
-          <CardContent className="p-6">
-            <h4 className="text-xl font-bold mb-2 text-slate-800 group-hover:text-blue-600 transition-colors">
-              {event.title}
-            </h4>
-            <p className="text-slate-600 mb-3">by {event?.organizer?.slice(0, 20) + '... ' + event?.organizer?.slice(-4)}</p>
-
-            <div className="space-y-2 mb-4">
-              <div className="flex items-center text-sm text-slate-600">
-                <Calendar className="w-4 h-4 mr-2" />
-                {format(new Date(event.eventdate), 'MMMM dd,yyyy')} at {format(new Date(event.eventdate), 'h:m b')}
-              </div>
-              <div className="flex items-center text-sm text-slate-600">
-                <MapPin className="w-4 h-4 mr-2" />
-                {event.location}
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center text-sm text-slate-600">
-                <Users className="w-4 h-4 mr-1" />
-                {mintedTokens}/{event.totalTickets} sold
-              </div>
-              <div className="text-lg font-bold text-slate-800">{event.ticketPrice} ETH</div>
-            </div>
-
-            <div className="w-full bg-slate-200 rounded-full h-2 mb-4">
-              <div
-                className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${soldPercentage}%` }}
-              />
-            </div>
-
-            <Button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white">
-              View Event
-            </Button>
-          </CardContent>
-        </Card>
-      </Link>
-    </motion.div>
   )
 }

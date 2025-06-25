@@ -3,9 +3,11 @@ import './globals.css'
 import { Web3Provider } from '@/provider/Web3Provider'
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.dev',
+  title: 'NFTix | Decentralized Event Booking Platform',
+  description: '',
+  icons:{
+    icon:'/nftix-logo.png'
+  }
 }
 
 export default function RootLayout({
