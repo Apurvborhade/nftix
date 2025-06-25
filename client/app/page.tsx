@@ -1,8 +1,10 @@
+'use client'
+
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Ticket, Shield, Eye, Coins, ArrowRight, Star, Twitter, Github, MessageCircle, FileText } from "lucide-react"
+import { Ticket, Shield, Eye, Coins, ArrowRight, Star,  Github } from "lucide-react"
 import Link from "next/link"
-
+import { XLogoIcon } from '@phosphor-icons/react'
 export default function NFTixLanding() {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 relative overflow-hidden scroll-smooth">
@@ -32,7 +34,7 @@ export default function NFTixLanding() {
           <Link href="#pricing" className="text-gray-600 hover:text-gray-900 transition-colors">
             Early Access
           </Link>
-          
+
         </nav>
 
         <Link href={'/explore'}>
@@ -57,7 +59,7 @@ export default function NFTixLanding() {
         </h1>
 
         <p className="text-xl md:text-xl text-gray-600 mb-12 max-w-4xl leading-relaxed">
-        The Web3 way to book and trade your event tickets — simple, secure, and seamless.
+          The Web3 way to book and trade your event tickets — simple, secure, and seamless.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4">
@@ -191,34 +193,16 @@ export default function NFTixLanding() {
               <span className="text-xl font-bold text-gray-900">NFTix</span>
             </div>
 
-            <nav className="flex items-center space-x-8 mb-6 md:mb-0">
-              <Link href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
-                Home
-              </Link>
-              <Link href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
-                Blog
-              </Link>
-              <Link href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
-                Docs
-              </Link>
-              <Link href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
-                Contact
-              </Link>
-            </nav>
+
 
             <div className="flex items-center space-x-4">
-              <Link href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
-                <Twitter className="w-5 h-5" />
+              <Link href="https://x.com/apurvcodes" target="_blank" className="text-gray-600 hover:text-gray-900 transition-colors">
+                <XLogoIcon className="w-5 h-5" />
               </Link>
-              <Link href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
+              <Link href="https://github.com/Apurvborhade/nftix" target="_blank" className="text-gray-600 hover:text-gray-900 transition-colors">
                 <Github className="w-5 h-5" />
               </Link>
-              <Link href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
-                <MessageCircle className="w-5 h-5" />
-              </Link>
-              <Link href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
-                <FileText className="w-5 h-5" />
-              </Link>
+
             </div>
           </div>
 
