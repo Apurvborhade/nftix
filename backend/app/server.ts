@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { Request, Response } from 'express'
 import dotenv from 'dotenv'
 import APIRoutes from './routes/EventRoutes'
 import TicketRoutes from './routes/TicketRoutes'
@@ -16,7 +16,9 @@ connectDB()
 
 app.use("/api", APIRoutes);
 app.use("/api", TicketRoutes);
-
+app.use('/ping', (req: Request, res: Response) => {
+    res.send("Server Working perfectly 🟢")
+})
 
 // Error Handler
 app.use(errorHandler)
