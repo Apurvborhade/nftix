@@ -152,7 +152,7 @@ export default function EventPage() {
                   className="w-full h-64 md:h-96 object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                <Badge className="absolute top-4 left-4 bg-white/90 text-slate-700">{event.category}</Badge>
+                <Badge className="absolute top-4 left-4 bg-white/90 text-slate-700 hover:bg-gradient-to-r hover:from-gray-300 hover:to-white">{event.category}</Badge>
               </div>
 
               {/* Event Info */}
@@ -307,20 +307,13 @@ export default function EventPage() {
                     <div className="space-y-2 text-sm text-slate-600">
                       <div className="flex justify-between">
                         <span>Ticket Price</span>
-                        <span>{event.ticketPrice}</span>
+                        <span>{event.ticketPrice} ETH</span>
                       </div>
-                      <div className="flex justify-between">
-                        <span>Platform Fee</span>
-                        <span>0.005 ETH</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Gas Fee</span>
-                        <span>~0.01 ETH</span>
-                      </div>
+                      
                       <div className="border-t border-slate-200 pt-2 mt-2">
                         <div className="flex justify-between font-semibold text-slate-800">
                           <span>Total</span>
-                          <span>~0.115 ETH</span>
+                          <span>~ {event.ticketPrice} ETH</span>
                         </div>
                       </div>
                     </div>

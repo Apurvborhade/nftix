@@ -62,7 +62,7 @@ export default function Explore() {
                         </motion.div>
 
                         <nav className="hidden md:flex items-center space-x-6">
-                            <Link href="/" className="text-slate-600 hover:text-slate-900 transition-colors">
+                            <Link href="/explore" className="text-slate-600 hover:text-slate-900 transition-colors">
                                 Events
                             </Link>
                             <Link href="/create-event" className="text-slate-600 hover:text-slate-900 transition-colors">
