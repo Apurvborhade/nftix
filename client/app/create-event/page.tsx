@@ -14,6 +14,7 @@ import { ArrowLeft, Upload, Calendar, MapPin, Users, DollarSign, Sparkles } from
 import Link from "next/link"
 import { Event, useCreateEvent } from "@/hooks/event/useEvent"
 import { useAccount } from "wagmi"
+import { toast } from "sonner"
 
 export default function CreateEventPage() {
   const [formData, setFormData] = useState<Event>({
@@ -28,7 +29,7 @@ export default function CreateEventPage() {
     eventtime: ""
   })
 
-  const { mutate: createEvent, isPending, isSuccess, error } = useCreateEvent()
+  const { mutate: createEvent, isPending, isSuccess, error,isError } = useCreateEvent()
 
 
   const { address } = useAccount()
@@ -45,6 +46,7 @@ export default function CreateEventPage() {
 
   useEffect(() => {
     if (isSuccess && !isPending) {
+      toast.success("Event Created Successfully");
       setFormData({
         title: "",
         description: "",
@@ -58,6 +60,11 @@ export default function CreateEventPage() {
       })
     }
   }, [isSuccess, isPending])
+  useEffect(() => {
+    if (error && isError) {
+      toast.error(error.message?.split("\n")[0] ?? "Transaction failed.");
+    }
+  }, [isError, error])
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/30">
       {/* Header */}

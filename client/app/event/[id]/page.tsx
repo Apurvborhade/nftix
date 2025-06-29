@@ -15,6 +15,8 @@ import EventTicketAbi from '@/lib/contract_abi/EventTicket.json'
 import { publicClient } from "@/lib/config"
 import { ConnectKitButton } from "connectkit"
 import { useAccount } from "wagmi"
+import { toast } from "sonner"
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface EventDetails {
   id: string
@@ -53,7 +55,7 @@ export default function EventPage() {
   const params = useParams()
   const eventId = params.id as string
   const { isConnected, address } = useAccount()
-  const { mutate, isPending: isMinting, isSuccess } = useMintTicket()
+  const { mutate, isPending: isMinting, isSuccess, isError, error } = useMintTicket()
   const { data } = useGetEvent(eventId);
 
   const event = data?.event
@@ -69,30 +71,52 @@ export default function EventPage() {
   }, [eventId]);
 
 
+  useEffect(() => {
+    if (error && isError) {
+      toast.error(error.message?.split("\n")[0] ?? "Transaction failed.");
+    }
+  }, [isError, error])
   if (!event) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/30 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-slate-800 mb-4">Event Not Found</h1>
-          <Link href="/">
-            <Button>Back to Events</Button>
-          </Link>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/30 py-16 px-4">
+      
+      <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left Skeleton */}
+        <div className="lg:col-span-2 space-y-6">
+          <Skeleton className="h-64 w-full rounded-xl" />
+          <Skeleton className="h-8 w-2/3" />
+          <Skeleton className="h-6 w-1/3" />
+          <Skeleton className="h-16 w-full" />
+          <Skeleton className="h-32 w-full" />
+        </div>
+
+        {/* Sidebar Skeleton */}
+        <div className="space-y-4">
+          <Skeleton className="h-48 w-full rounded-xl" />
+          <Skeleton className="h-10 w-full" />
         </div>
       </div>
+    </div>
     )
   }
 
 
+
+
   const mintTicket = async () => {
+    console.log(eventId)
+
     mutate({
       account: address,
       to: address,
       event: eventId,
-      tickerPrice: event.ticketPrice
+      ticketPrice: event.ticketPrice
     })
   }
 
   const soldPercentage = (mintedTokens / event.totalTickets) * 100
+
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/30">
@@ -309,7 +333,7 @@ export default function EventPage() {
                         <span>Ticket Price</span>
                         <span>{event.ticketPrice} ETH</span>
                       </div>
-                      
+
                       <div className="border-t border-slate-200 pt-2 mt-2">
                         <div className="flex justify-between font-semibold text-slate-800">
                           <span>Total</span>

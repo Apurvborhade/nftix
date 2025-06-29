@@ -256,7 +256,7 @@ function EventCard({ event, index, featured = false }: { event: Event; index: nu
 
                     <CardContent className="p-6">
                         <h4 className="text-xl font-bold mb-2 text-slate-800 group-hover:text-blue-600 transition-colors">
-                            {event.title}
+                            {event.name}
                         </h4>
                         <p className="text-slate-600 mb-3">by {event?.organizer?.slice(0, 20) + '... ' + event?.organizer?.slice(-4)}</p>
 

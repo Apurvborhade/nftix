@@ -27,6 +27,15 @@ export const createEvent = async (req: Request, res: Response, next: NextFunctio
             !totalTickets ||
             !organizer || !contractAddress
         ) {
+            console.log(name,
+                description,
+                category,
+                eventdate,
+                location,
+                ticketPrice,
+                totalTickets,
+                organizer,
+                contractAddress )
             throw new Error("Enter All Fields") as CustomError
         }
         const event = new EventModel({
@@ -104,17 +113,20 @@ export const getEventByAddress = async (req: Request, res: Response, next: NextF
 
 
 export const mintTicket = async (req: Request, res: Response, next: NextFunction) => {
-    const { event, owner, ticketId } = req.body;
+    const { event, owner, ticketId, hash } = req.body;
     console.log("Minting Ticket", event, owner, ticketId);
     try {
-        if (!event || !owner || !ticketId) {
+        if (!event || !owner || !ticketId || !hash) {
             throw new Error("Provide all required info.") as CustomError
         }
 
-        const eventObject = await EventModel.findOne({ contractAddress: event })
+        const eventObject = await EventModel.findOne({ contractAddress: event });
+                
+
         const ticket = new Ticket({
             owner,
-            event: eventObject,
+            event: event,
+            tx: hash,
             ticketId
         })
 

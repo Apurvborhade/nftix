@@ -36,6 +36,7 @@ export function useCreateEvent() {
             try {
                 console.log("Creating Event")
                 const event = await createEvent(title, organizer as `0x${string}`, parseEther(ticketPrice));
+                console.log("Event Created: ", event);
                 const isoString = `${eventdate}T${eventtime}:00Z`;
                 console.log("New Event: ", event)
                 const res = await axiosInstance.post(`/events/create`, {
@@ -55,6 +56,7 @@ export function useCreateEvent() {
                 const axiosErr = error as AxiosError<{ message?: string }>;
                 const message =
                     axiosErr.response?.data?.message || axiosErr.message || "Upload failed";
+                console.log(error)
                 throw new Error(message);
             }
         }
@@ -105,11 +107,15 @@ export function useMintTicket() {
         mutationFn: async ({ account, to, event, ticketPrice }) => {
             try {
                 console.log("mint")
-                const TokenID = await mintTicket(account, to, event, ticketPrice);
-                console.log("TokenID: ", TokenID)
+
+                const mintDet = await mintTicket(account, to, event, ticketPrice);
+
+                const { TokenID, hash } = mintDet;
+                console.log("TokenID:", TokenID)
                 const res = await axiosInstance.post(`/ticket/mint`, {
-                    event,
+                    event: event,
                     owner: account,
+                    hash,
                     ticketId: Number(TokenID)
                 })
                 console.log("Data:", res.data)
@@ -118,10 +124,11 @@ export function useMintTicket() {
                 const axiosErr = error as AxiosError<{ message?: string }>;
                 const message =
                     axiosErr.response?.data?.message || axiosErr.message || "Upload failed";
+
                 throw new Error(message);
             }
         },
-        
+
     })
 }
 
