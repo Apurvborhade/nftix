@@ -31,11 +31,13 @@ export default function Explore() {
 
     const filteredEvents = data?.events?.filter((event: Event) => {
         const matchesSearch =
-            event?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            event?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
             event?.organizer?.toLowerCase().includes(searchQuery.toLowerCase()) ||
             event.location.toLowerCase().includes(searchQuery.toLowerCase())
         const matchesCategory = selectedCategory.toLowerCase() === "all" || event.category === selectedCategory.toLowerCase()
+        console.log("Search: ",event,matchesSearch)
         return matchesSearch && matchesCategory
+
     })
 
 

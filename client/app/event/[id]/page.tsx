@@ -12,11 +12,12 @@ import { useGetEvent, useMintTicket } from "@/hooks/event/useEvent"
 import { format } from "date-fns"
 
 import EventTicketAbi from '@/lib/contract_abi/EventTicket.json'
-import { publicClient } from "@/lib/config"
+import { config, publicClient } from "@/lib/config"
 import { ConnectKitButton } from "connectkit"
 import { useAccount } from "wagmi"
 import { toast } from "sonner"
 import { Skeleton } from "@/components/ui/skeleton"
+import { watchContractEvent } from "viem/actions"
 
 interface EventDetails {
   id: string
@@ -68,6 +69,21 @@ export default function EventPage() {
 
   useEffect(() => {
     getMintedTokensFromContract(eventId as `0x${string}`).then(setMintedTokens);
+
+    const unwatch = watchContractEvent(publicClient, {
+      address: eventId as `0x${string}`,
+      abi: EventTicketAbi.abi,
+      eventName: "TicketMinted",
+      onLogs: () => {
+        // When TicketMinted fires, refresh minted tokens count
+        getMintedTokensFromContract(eventId as `0x${string}`).then(setMintedTokens);
+      },
+      pollingInterval: 2_000,
+    })
+    return () => {
+      unwatch();
+    };
+    
   }, [eventId]);
 
 
@@ -76,27 +92,32 @@ export default function EventPage() {
       toast.error(error.message?.split("\n")[0] ?? "Transaction failed.");
     }
   }, [isError, error])
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success("Purchased Ticket Successfully 🚀");
+    }
+  }, [isSuccess])
   if (!event) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/30 py-16 px-4">
-      
-      <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Skeleton */}
-        <div className="lg:col-span-2 space-y-6">
-          <Skeleton className="h-64 w-full rounded-xl" />
-          <Skeleton className="h-8 w-2/3" />
-          <Skeleton className="h-6 w-1/3" />
-          <Skeleton className="h-16 w-full" />
-          <Skeleton className="h-32 w-full" />
-        </div>
 
-        {/* Sidebar Skeleton */}
-        <div className="space-y-4">
-          <Skeleton className="h-48 w-full rounded-xl" />
-          <Skeleton className="h-10 w-full" />
+        <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Skeleton */}
+          <div className="lg:col-span-2 space-y-6">
+            <Skeleton className="h-64 w-full rounded-xl" />
+            <Skeleton className="h-8 w-2/3" />
+            <Skeleton className="h-6 w-1/3" />
+            <Skeleton className="h-16 w-full" />
+            <Skeleton className="h-32 w-full" />
+          </div>
+
+          {/* Sidebar Skeleton */}
+          <div className="space-y-4">
+            <Skeleton className="h-48 w-full rounded-xl" />
+            <Skeleton className="h-10 w-full" />
+          </div>
         </div>
       </div>
-    </div>
     )
   }
 
@@ -130,7 +151,7 @@ export default function EventPage() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link href="/">
+              <Link href="/explore">
                 <Button variant="ghost" size="sm">
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Back to Events
@@ -307,7 +328,7 @@ export default function EventPage() {
                   <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                     <Button
                       onClick={mintTicket}
-                      disabled={!isConnected || isMinting}
+                      disabled={!isConnected || isMinting || soldPercentage === 100}
                       className="w-full py-4 text-lg font-semibold bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl mb-4"
                     >
                       {isMinting ? (
