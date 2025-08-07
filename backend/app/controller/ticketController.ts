@@ -51,7 +51,7 @@ export const createEvent = async (req: Request, res: Response, next: NextFunctio
         })
 
         await event.save()
-
+        
         if (!event) {
             throw new Error("Cannoot Create Event") as CustomError
         }
