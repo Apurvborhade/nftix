@@ -13,6 +13,9 @@ const EVENT_CREATED_TOPIC = toEventSelector('EventCreated(address)');
 
 export const createEvent = async (eventName: string, account: `0x${string}`, eventPrice: bigint) => {
     try {
+        console.log("eventName:", eventName);
+        console.log("symbol:", eventName.slice(0, 2).toUpperCase());
+        console.log("price:", eventPrice);
         const { request } = await simulateContract(config, {
             address: TICKET_FACTORY as `0x${string}`,
             abi: TICKET_FACTORY_ABI,
